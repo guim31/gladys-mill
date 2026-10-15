@@ -31,16 +31,25 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
+index.js                          SDK wiring only: registerHandlers(gladys), then connect()
+src/app.js                        every SDK handler, registered before connect(); test seams
+src/hub.js                        MillHub: refresh timers, discovery, states, commands, trigger
+src/mill/cloud.js                 Mill cloud client (sign-in, refresh, houses, devices, PATCH)
+src/mill/local.js                 Gen 3 local API client (/status, /control-status, commands)
+src/mill/errors.js                MillAuthError / MillRateLimitError / MillHttpError
+src/model.js                      cloud device / local answer → snapshot (one shape)
+src/devices.js                    snapshot → Gladys device (features, supported_options, states)
+src/energy.js                     energy index counted from the daily energy, kept in /data
+src/store.js                      /data/mill.json (tokens, energy index), atomic writes
 src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+src/widgets.js                    dashboard widget (manifest `widgets`)
+src/i18n.js                       every text, en/fr/de/es
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
+src/issues.js                     a repeated failure logged once, its recovery once
+scripts/probe.mjs                 read-only probe of the real APIs (fake account, real account, <ip>)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (same sections)
+test/                             node --test, against the SDK's fake Gladys and test/helpers/fakeMill.js
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -70,8 +79,10 @@ test/                             node --test, against the SDK's fake Gladys (in
   `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in four languages (English, French, German with
+  "du", Spanish with "usted"): action messages, widget texts, feature names,
+  manifest texts, and `docs/en.md`, `fr.md`, `de.md`, `es.md`, kept in sync
+  (`test/i18n.test.js`).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +244,34 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## Intégration Mill (propre à ce dépôt)
+
+- **Deux sources, deux identités** : un appareil du cloud est
+  `externalIds('cloud', deviceId)`, un radiateur local `externalIds('local', <MAC en 12 hex>)`.
+  Ne jamais fusionner ni renommer : un radiateur Gen 3 vu des deux côtés reste deux appareils
+  possibles ; avec « Préférer la connexion locale », la copie cloud n'est pas proposée en
+  découverte (jumeau reconnu par `macAddress` du cloud, champ **non vérifié**).
+- **Cloud Mill** (`api.millnorwaycloud.com`, d'après `millheater` 0.15) : jeton id ~10 min
+  (`exp` du JWT), jeton de rafraîchissement gardé dans `/data/mill.json` avec un hachage de
+  l'e-mail. Un compte refusé arrête les lectures du cloud jusqu'au changement de config (ne
+  pas boucler sur le sign-in, le compte pourrait être bloqué) ; un 429 double l'intervalle
+  (30 min au plus).
+- **Consigne cloud** : `PATCH devices/<id>/settings` avec `operation_mode: control_individually`
+  et `temperature_normal`, comme millheater : en programme hebdomadaire la consigne seule ne
+  ferait rien. L'état commandé est publié tout de suite et « tenu » 30 s contre une lecture
+  du cloud en retard.
+- **Modes** : `thermostat/mode` avec `supported_options` OFF (0), HEATING (1, consigne
+  individuelle), AUTO (3, programme hebdomadaire). COOLING est refusé.
+- **Énergie** : le cloud ne donne que l'énergie du jour (`energyUsageForCurrentDay`, en Wh).
+  `energy-sensor/index` est compté par l'intégration (`src/energy.js`), sauvé au plus toutes
+  les 10 min et à l'arrêt. Ne pas publier dans `daily-consumption` par `POST /state` : ce type
+  passe par `publishEnergyConsumption`.
+- **Fenêtre ouverte** : `input/binary` (1 = détectée), pas `opening-sensor` (0 = ouvert,
+  piège d'inversion) : c'est une détection du radiateur, pas un capteur d'ouverture.
+- **Fixtures reconstruites** (`test/fixtures/mill/README.md`) : aucun compte ni radiateur
+  pendant le développement. Les champs `macAddress`, `roomName`, l'API des purificateurs et
+  les clés optionnelles de `/control-status` sont des hypothèses : `scripts/probe.mjs` les
+  vérifie sur le vrai matériel.
+- Le proxy de la session de développement refuse `api.millnorwaycloud.com` : le probe se
+  lance depuis une machine qui a le réseau.

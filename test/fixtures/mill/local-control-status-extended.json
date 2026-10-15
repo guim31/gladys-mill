@@ -1,0 +1,14 @@
+{
+  "ambient_temperature": 21.2,
+  "humidity": 38.5,
+  "current_power": 850,
+  "control_signal": 100,
+  "lock_active": false,
+  "open_window_active_now": false,
+  "raw_ambient_temperature": 21.9,
+  "set_temperature": 22,
+  "switched_on": true,
+  "connected_to_cloud": true,
+  "operation_mode": "Control individually",
+  "status": "ok"
+}
