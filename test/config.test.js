@@ -1,33 +1,42 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { normalizeConfig, DEFAULT_CONFIG } from '../src/config.js';
+import { DEFAULT_CONFIG, isConfigured, normalizeConfig, parseHosts } from '../src/config.js';
 
-test('normalizeConfig returns the defaults when called with no argument', () => {
-  assert.deepEqual(normalizeConfig(), DEFAULT_CONFIG);
+test('defaults: nothing configured, French names, one-minute cloud refresh', () => {
+  const config = normalizeConfig();
+  assert.equal(config.language, 'fr');
+  assert.equal(config.refreshIntervalS, 60);
+  assert.equal(config.preferLocal, true);
+  assert.deepEqual(config.hosts, []);
+  assert.equal(isConfigured(config), false);
+  assert.equal(DEFAULT_CONFIG.language, 'fr');
 });
 
-test('normalizeConfig keeps user values over the defaults', () => {
-  const config = normalizeConfig({ latitude: 45.5, longitude: -73.6, unit: 'fahrenheit' });
-  assert.equal(config.latitude, 45.5);
-  assert.equal(config.longitude, -73.6);
-  assert.equal(config.unit, 'fahrenheit');
+test('values are typed and bounded', () => {
+  const config = normalizeConfig({
+    username: '  me@example.com ',
+    password: 'p',
+    refresh_interval: '300',
+    language: 'de',
+    GLADYS_PREFER_LOCAL: false,
+  });
+  assert.equal(config.username, 'me@example.com');
+  assert.equal(config.refreshIntervalS, 300);
+  assert.equal(config.language, 'de');
+  assert.equal(config.preferLocal, false);
+  assert.equal(isConfigured(config), true);
+  assert.equal(normalizeConfig({ refresh_interval: '5' }).refreshIntervalS, 60);
+  assert.equal(normalizeConfig({ language: 'it' }).language, 'fr');
 });
 
-test('normalizeConfig coerces numeric strings coming from a form', () => {
-  const config = normalizeConfig({ latitude: '48.8', longitude: '2.3', poll_frequency: '600' });
-  assert.equal(config.latitude, 48.8);
-  assert.equal(config.longitude, 2.3);
-  assert.equal(config.poll_frequency, 600);
-  assert.equal(typeof config.poll_frequency, 'number');
-});
-
-test('normalizeConfig falls back to the default for a missing numeric field', () => {
-  const config = normalizeConfig({ unit: 'celsius' });
-  assert.equal(config.poll_frequency, DEFAULT_CONFIG.poll_frequency);
-});
-
-test('GLADYS_PREFER_LOCAL defaults to true and only an explicit false disables it', () => {
-  assert.equal(normalizeConfig().GLADYS_PREFER_LOCAL, true);
-  assert.equal(normalizeConfig({ GLADYS_PREFER_LOCAL: true }).GLADYS_PREFER_LOCAL, true);
-  assert.equal(normalizeConfig({ GLADYS_PREFER_LOCAL: false }).GLADYS_PREFER_LOCAL, false);
+test('local addresses: separators, schemes and duplicates; invalid ones set aside', () => {
+  assert.deepEqual(parseHosts('192.0.2.40, http://192.0.2.41/ ;192.0.2.40\nmill-bureau.lan:80'), {
+    hosts: ['192.0.2.40', '192.0.2.41', 'mill-bureau.lan:80'],
+    invalidHosts: [],
+  });
+  assert.deepEqual(parseHosts('user:pass@192.0.2.1, 192.0.2.40/status, ok.lan'), {
+    hosts: ['ok.lan'],
+    invalidHosts: ['user:pass@192.0.2.1', '192.0.2.40/status'],
+  });
+  assert.deepEqual(parseHosts(''), { hosts: [], invalidHosts: [] });
 });

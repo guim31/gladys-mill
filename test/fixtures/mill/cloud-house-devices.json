@@ -1,0 +1,91 @@
+[
+  {
+    "roomId": "a1b2c3d4-0000-4000-8000-0000000000a1",
+    "roomName": "Salon",
+    "devices": [
+      {
+        "deviceId": "a1b2c3d4-0000-4000-8000-000000000101",
+        "customName": "Radiateur salon",
+        "isConnected": true,
+        "macAddress": "02:00:5e:10:00:01",
+        "deviceType": {
+          "childType": { "name": "PanelHeaterGen3" },
+          "parentType": { "name": "Heaters" }
+        },
+        "lastMetrics": {
+          "time": 1760510000000,
+          "temperatureAmbient": 20.62,
+          "temperature": 21,
+          "heaterFlag": 1,
+          "powerStatus": 1,
+          "openWindowsStatus": 3,
+          "controlSignal": 52,
+          "currentPower": 640,
+          "energyUsage": 1843210
+        },
+        "energyUsageForCurrentDay": 2310,
+        "deviceSettings": {
+          "reported": {
+            "operation_mode": "control_individually",
+            "temperature_normal": 21,
+            "lock_status": "no_lock",
+            "frost_protection_active": false,
+            "max_heater_power": 1200
+          },
+          "desired": { "operation_mode": "control_individually", "temperature_normal": 21 }
+        }
+      },
+      {
+        "deviceId": "a1b2c3d4-0000-4000-8000-000000000102",
+        "customName": "Prise radiateur bain d'huile",
+        "isConnected": true,
+        "deviceType": {
+          "childType": { "name": "GL-WIFI Socket G3" },
+          "parentType": { "name": "Sockets" }
+        },
+        "lastMetrics": {
+          "time": 1760510005000,
+          "temperatureAmbient": 19.4,
+          "temperature": 19,
+          "humidity": 47.3,
+          "heaterFlag": 0,
+          "powerStatus": 1,
+          "currentPower": 0
+        },
+        "energyUsageForCurrentDay": 840,
+        "deviceSettings": {
+          "reported": { "operation_mode": "weekly_program", "lock_status": "child_lock" },
+          "desired": { "temperature_normal": 19 }
+        }
+      }
+    ]
+  },
+  {
+    "roomId": "a1b2c3d4-0000-4000-8000-0000000000a2",
+    "roomName": "Chambre",
+    "devices": [
+      {
+        "deviceId": "a1b2c3d4-0000-4000-8000-000000000103",
+        "customName": "Chambre",
+        "isConnected": true,
+        "deviceType": {
+          "childType": { "name": "Oil heater" },
+          "parentType": { "name": "Heaters" }
+        },
+        "lastMetrics": {
+          "time": 1760510010000,
+          "temperatureAmbient": 17.1,
+          "heaterFlag": 0,
+          "powerStatus": 0,
+          "openWindowsStatus": 2,
+          "currentPower": 0
+        },
+        "energyUsageForCurrentDay": 0,
+        "deviceSettings": {
+          "reported": { "operation_mode": "off" },
+          "desired": { "temperature_normal": 18 }
+        }
+      }
+    ]
+  }
+]

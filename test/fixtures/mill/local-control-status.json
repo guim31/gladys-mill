@@ -1,0 +1,8 @@
+{
+  "ambient_temperature": 19.8,
+  "set_temperature": 20.5,
+  "current_power": 0,
+  "control_signal": 0,
+  "raw_ambient_temperature": 19.3,
+  "operation_mode": "Weekly program"
+}

@@ -1,177 +1,349 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "Mill",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Mill heaters, sockets and air sensors: temperature, set-point, mode, power, energy.",
+    "fr": "Radiateurs, prises et capteurs d'air Mill : température, consigne, mode, puissance, énergie.",
+    "de": "Mill-Heizkörper, Steckdosen und Luftsensoren: Temperatur, Sollwert, Modus, Leistung, Energie.",
+    "es": "Radiadores, enchufes y sensores de aire Mill: temperatura, consigna, modo, potencia, energía."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
+  "docker_image": "ghcr.io/guim31/gladys-mill:1.0.0",
   "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-mill/main/cover.png",
+  "categories": ["climate", "energy"],
+  "transports": ["cloud", "local"],
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "Mill account",
+        "fr": "Compte Mill",
+        "de": "Mill-Konto",
+        "es": "Cuenta Mill"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "The e-mail address and the password of the Mill app: every heater, socket and sensor of the account is found. Leave them empty to use only the local API of Gen 3 heaters.",
+        "fr": "L'adresse e-mail et le mot de passe de l'appli Mill : tous les radiateurs, prises et capteurs du compte sont trouvés. Laissez-les vides pour n'utiliser que l'API locale des radiateurs Gen 3.",
+        "de": "E-Mail-Adresse und Passwort der Mill-App: Alle Heizkörper, Steckdosen und Sensoren des Kontos werden gefunden. Lass sie leer, um nur die lokale API der Gen-3-Heizkörper zu nutzen.",
+        "es": "La dirección de correo y la contraseña de la aplicación Mill: se encuentran todos los radiadores, enchufes y sensores de la cuenta. Déjelos vacíos para usar solo la API local de los radiadores Gen 3."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://github.com/guim31/gladys-mill/blob/main/docs/en.md",
+          "label": {
+            "en": "Documentation",
+            "fr": "Documentation",
+            "de": "Dokumentation",
+            "es": "Documentación"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "username",
+      "type": "string",
+      "label": {
+        "en": "E-mail address",
+        "fr": "Adresse e-mail",
+        "de": "E-Mail-Adresse",
+        "es": "Dirección de correo"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
-    },
-    {
-      "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "placeholder": {
+        "en": "e.g. me@example.com",
+        "fr": "ex. moi@example.com",
+        "de": "z. B. ich@example.com",
+        "es": "p. ej. yo@example.com"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
-    },
-    {
-      "key": "unit",
-      "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
       "required": false,
-      "default": "celsius",
+      "default": ""
+    },
+    {
+      "key": "password",
+      "type": "secret",
+      "label": {
+        "en": "Password",
+        "fr": "Mot de passe",
+        "de": "Passwort",
+        "es": "Contraseña"
+      },
+      "required": false
+    },
+    {
+      "key": "local",
+      "type": "section",
+      "label": {
+        "en": "Gen 3 heaters on the local network",
+        "fr": "Radiateurs Gen 3 sur le réseau local",
+        "de": "Gen-3-Heizkörper im lokalen Netzwerk",
+        "es": "Radiadores Gen 3 en la red local"
+      },
+      "description": {
+        "en": "The recent Mill heaters (Gen 3) answer on the local network once the local API is enabled in the Mill app. Enter their IP addresses: they keep working without Internet.",
+        "fr": "Les radiateurs Mill récents (Gen 3) répondent sur le réseau local une fois l'API locale activée dans l'appli Mill. Saisissez leurs adresses IP : ils fonctionnent alors sans Internet.",
+        "de": "Die neueren Mill-Heizkörper (Gen 3) antworten im lokalen Netzwerk, sobald die lokale API in der Mill-App aktiviert ist. Gib ihre IP-Adressen ein: Dann funktionieren sie ohne Internet.",
+        "es": "Los radiadores Mill recientes (Gen 3) responden en la red local una vez activada la API local en la aplicación Mill. Introduzca sus direcciones IP: funcionan entonces sin Internet."
+      }
+    },
+    {
+      "key": "local_hosts",
+      "type": "string",
+      "label": {
+        "en": "Local addresses",
+        "fr": "Adresses locales",
+        "de": "Lokale Adressen",
+        "es": "Direcciones locales"
+      },
+      "description": {
+        "en": "IP addresses of the Gen 3 heaters, separated by commas. Give them a fixed address in your router.",
+        "fr": "Adresses IP des radiateurs Gen 3, séparées par des virgules. Fixez-leur une adresse dans votre box.",
+        "de": "IP-Adressen der Gen-3-Heizkörper, durch Kommas getrennt. Gib ihnen im Router eine feste Adresse.",
+        "es": "Direcciones IP de los radiadores Gen 3, separadas por comas. Asígneles una dirección fija en su router."
+      },
+      "placeholder": {
+        "en": "e.g. 192.168.1.40, 192.168.1.41",
+        "fr": "ex. 192.168.1.40, 192.168.1.41",
+        "de": "z. B. 192.168.1.40, 192.168.1.41",
+        "es": "p. ej. 192.168.1.40, 192.168.1.41"
+      },
+      "required": false,
+      "default": ""
+    },
+    {
+      "key": "refresh_interval",
+      "type": "select",
+      "label": {
+        "en": "Cloud refresh",
+        "fr": "Rafraîchissement du cloud",
+        "de": "Cloud-Aktualisierung",
+        "es": "Actualización de la nube"
+      },
+      "description": {
+        "en": "How often the Mill cloud is read. The local heaters are read every 30 seconds.",
+        "fr": "Fréquence de lecture du cloud Mill. Les radiateurs locaux sont lus toutes les 30 secondes.",
+        "de": "Wie oft die Mill-Cloud gelesen wird. Die lokalen Heizkörper werden alle 30 Sekunden gelesen.",
+        "es": "Frecuencia de lectura de la nube Mill. Los radiadores locales se leen cada 30 segundos."
+      },
+      "required": false,
+      "default": "60",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "60",
+          "label": {
+            "en": "Every minute",
+            "fr": "Toutes les minutes",
+            "de": "Jede Minute",
+            "es": "Cada minuto"
+          }
+        },
+        {
+          "value": "120",
+          "label": {
+            "en": "Every 2 minutes",
+            "fr": "Toutes les 2 minutes",
+            "de": "Alle 2 Minuten",
+            "es": "Cada 2 minutos"
+          }
+        },
+        {
+          "value": "300",
+          "label": {
+            "en": "Every 5 minutes",
+            "fr": "Toutes les 5 minutes",
+            "de": "Alle 5 Minuten",
+            "es": "Cada 5 minutos"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the feature names",
+        "fr": "Langue des noms de fonctionnalités",
+        "de": "Sprache der Funktionsnamen",
+        "es": "Idioma de los nombres de funciones"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Used when a device is added to Gladys.",
+        "fr": "Utilisée quand un appareil est ajouté à Gladys.",
+        "de": "Wird verwendet, wenn ein Gerät zu Gladys hinzugefügt wird.",
+        "es": "Se usa cuando se añade un dispositivo a Gladys."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": { "en": "English", "fr": "Anglais", "de": "Englisch", "es": "Inglés" }
+        },
+        {
+          "value": "fr",
+          "label": { "en": "French", "fr": "Français", "de": "Französisch", "es": "Francés" }
+        },
+        {
+          "value": "de",
+          "label": { "en": "German", "fr": "Allemand", "de": "Deutsch", "es": "Alemán" }
+        },
+        {
+          "value": "es",
+          "label": { "en": "Spanish", "fr": "Espagnol", "de": "Spanisch", "es": "Español" }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
-      "timeout_seconds": 30
-    },
-    {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
+      "key": "test_connection",
+      "label": {
+        "en": "Test the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung testen",
+        "es": "Probar la conexión"
+      },
+      "timeout_seconds": 60
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "device_offline",
+      "label": {
+        "en": "Mill device offline",
+        "fr": "Appareil Mill hors ligne",
+        "de": "Mill-Gerät offline",
+        "es": "Dispositivo Mill sin conexión"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "A Mill device stopped answering: unplugged, out of Wi-Fi, or tripped breaker.",
+        "fr": "Un appareil Mill ne répond plus : débranché, hors Wi-Fi ou disjoncteur coupé.",
+        "de": "Ein Mill-Gerät antwortet nicht mehr: ausgesteckt, ohne WLAN oder Sicherung ausgelöst.",
+        "es": "Un dispositivo Mill dejó de responder: desenchufado, sin Wi-Fi o con el disyuntor saltado."
       },
       "fields": [
         {
           "key": "device",
           "type": "select",
           "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
-        },
-        {
-          "key": "target",
-          "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
-          "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
-          ]
+          "label": {
+            "en": "Device",
+            "fr": "Appareil",
+            "de": "Gerät",
+            "es": "Dispositivo"
+          }
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "device_name",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
+          "label": {
+            "en": "Device name",
+            "fr": "Nom de l'appareil",
+            "de": "Gerätename",
+            "es": "Nombre del dispositivo"
+          }
         }
       ]
     }
   ],
   "scene_actions": [
     {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
+      "key": "set_mode_all",
+      "label": {
+        "en": "Set every Mill heater to a mode",
+        "fr": "Passer tous les radiateurs Mill dans un mode",
+        "de": "Alle Mill-Heizkörper in einen Modus setzen",
+        "es": "Poner todos los radiadores Mill en un modo"
       },
-      "timeout_seconds": 15,
+      "description": {
+        "en": "Changes the mode of every Mill heater and socket added to Gladys at once.",
+        "fr": "Change d'un coup le mode de tous les radiateurs et prises Mill ajoutés à Gladys.",
+        "de": "Ändert auf einmal den Modus aller zu Gladys hinzugefügten Mill-Heizkörper und Steckdosen.",
+        "es": "Cambia a la vez el modo de todos los radiadores y enchufes Mill añadidos a Gladys."
+      },
+      "timeout_seconds": 60,
       "fields": [
         {
-          "key": "device",
+          "key": "mode",
           "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
+          "label": {
+            "en": "Mode",
+            "fr": "Mode",
+            "de": "Modus",
+            "es": "Modo"
+          },
+          "required": true,
+          "default": "weekly",
+          "options": [
+            {
+              "value": "weekly",
+              "label": {
+                "en": "Weekly programme",
+                "fr": "Programme hebdomadaire",
+                "de": "Wochenprogramm",
+                "es": "Programa semanal"
+              }
+            },
+            {
+              "value": "individual",
+              "label": {
+                "en": "Individual set-point",
+                "fr": "Consigne individuelle",
+                "de": "Eigene Solltemperatur",
+                "es": "Consigna individual"
+              }
+            },
+            {
+              "value": "off",
+              "label": { "en": "Off", "fr": "Arrêt", "de": "Aus", "es": "Apagado" }
+            }
+          ]
         }
       ],
       "outputs": [
         {
-          "key": "signalled",
-          "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "key": "changed",
+          "type": "number",
+          "label": {
+            "en": "Heaters changed",
+            "fr": "Radiateurs modifiés",
+            "de": "Geänderte Heizkörper",
+            "es": "Radiadores modificados"
+          }
+        },
+        {
+          "key": "failed",
+          "type": "number",
+          "label": {
+            "en": "Heaters without answer",
+            "fr": "Radiateurs sans réponse",
+            "de": "Heizkörper ohne Antwort",
+            "es": "Radiadores sin respuesta"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "overview",
+      "label": {
+        "en": "Mill heaters",
+        "fr": "Radiateurs Mill",
+        "de": "Mill-Heizkörper",
+        "es": "Radiadores Mill"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Every Mill heater at a glance, total power, all off or back to the weekly programme.",
+        "fr": "Tous les radiateurs Mill d'un coup d'œil, puissance totale, tout éteindre ou programme.",
+        "de": "Alle Mill-Heizkörper auf einen Blick, Gesamtleistung, alle aus oder zurück zum Programm.",
+        "es": "Todos los radiadores Mill de un vistazo, potencia total, apagar todo o volver al programa."
+      },
+      "icon": "thermometer",
+      "action_timeout_seconds": 60
     }
   ]
 }

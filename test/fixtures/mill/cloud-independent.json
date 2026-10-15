@@ -1,0 +1,48 @@
+{
+  "items": [
+    {
+      "deviceId": "a1b2c3d4-0000-4000-8000-000000000201",
+      "customName": "Mill Sense bureau",
+      "isConnected": true,
+      "deviceType": {
+        "childType": { "name": "Mill Sense Air" },
+        "parentType": { "name": "Sensors" }
+      },
+      "lastMetrics": {
+        "time": 1760510020000,
+        "temperature": 21.37,
+        "humidity": 44.1,
+        "eco2": 612,
+        "tvoc": 143,
+        "batteryPercentage": 87
+      }
+    },
+    {
+      "deviceId": "a1b2c3d4-0000-4000-8000-000000000301",
+      "customName": "Purificateur",
+      "isConnected": true,
+      "deviceType": {
+        "childType": { "name": "Mill Silent Pro" },
+        "parentType": { "name": "Air Purifiers" }
+      },
+      "lastMetrics": {
+        "time": 1760510030000,
+        "temperature": 22.1,
+        "humidity": 39.8,
+        "massPm_10": 2.1,
+        "massPm_25": 4.6,
+        "massPm_100": 7.9
+      }
+    },
+    {
+      "deviceId": "a1b2c3d4-0000-4000-8000-000000000401",
+      "customName": "Unknown gadget",
+      "isConnected": true,
+      "deviceType": {
+        "childType": { "name": "Gadget" },
+        "parentType": { "name": "Gadgets" }
+      },
+      "lastMetrics": {}
+    }
+  ]
+}
