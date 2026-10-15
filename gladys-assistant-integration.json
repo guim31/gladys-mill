@@ -8,8 +8,8 @@
     "de": "Mill-Heizkörper, Steckdosen und Luftsensoren: Temperatur, Sollwert, Modus, Leistung, Energie.",
     "es": "Radiadores, enchufes y sensores de aire Mill: temperatura, consigna, modo, potencia, energía."
   },
-  "version": "1.0.0",
-  "docker_image": "ghcr.io/guim31/gladys-mill:1.0.0",
+  "version": "1.0.1",
+  "docker_image": "ghcr.io/guim31/gladys-mill:1.0.1",
   "gladys_version": ">=5.1.0",
   "cover_image": "https://raw.githubusercontent.com/guim31/gladys-mill/main/cover.png",
   "categories": ["climate", "energy"],

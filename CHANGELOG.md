@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-15
+
 ### Added
 
 - Mill heaters, sockets, Mill Sense sensors and air purifiers of the Mill
@@ -30,4 +32,5 @@ the notes of the version's GitHub Release.
 - "Test the connection" button in the configuration.
 - Texts and documentation in English, French, German and Spanish.
 
-[Unreleased]: https://github.com/guim31/gladys-mill/commits/main
+[Unreleased]: https://github.com/guim31/gladys-mill/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-mill/releases/tag/v1.0.1

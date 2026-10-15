@@ -1,6 +1,6 @@
 {
   "name": "gladys-mill",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Mill heaters, sockets and air sensors for Gladys Assistant (Mill cloud and Gen 3 local API).",
   "type": "module",
